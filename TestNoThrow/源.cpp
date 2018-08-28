@@ -1,6 +1,8 @@
 #include <iostream>
 #include <new>
 
+#include <thread>
+
 int main()
 {
 	int n = 0;

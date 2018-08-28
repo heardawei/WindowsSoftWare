@@ -76,6 +76,7 @@ BOOL BaseWindow<T>::Create(PCWSTR lpWindowName, DWORD dwStyle, DWORD dwExStyle,
 {
 	WNDCLASS wc = { 0 };
 
+	wc.style = CS_DBLCLKS;		/* enable double clicks msg */
 	wc.lpfnWndProc = T::WindowProc;
 	wc.hInstance = GetModuleHandle(NULL);
 	wc.lpszClassName = ClassName();
