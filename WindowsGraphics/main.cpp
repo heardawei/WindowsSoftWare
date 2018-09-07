@@ -213,13 +213,14 @@ void MainWindow::OnMouseMove(int pixelX, int pixelY, DWORD flags)
 		const float y1 = this->ptLbuttonDown.y + height;
 
 		this->ellipse = D2D1::Ellipse(D2D1::Point2F(x1, y1), width, height);
+
+		/* repaint client area */
 		InvalidateRect(m_hwnd, NULL, FALSE);
 	}
 }
 
 void MainWindow::OnLButtonUp()
 {
-	/*this->listDrawEllipse.emplace_back(D2D1::Point2F(x1, y1), width, height);*/
 	this->listDrawEllipse.push_back(this->ellipse);
 	InvalidateRect(m_hwnd, NULL, FALSE);
 	ReleaseCapture();
