@@ -9,14 +9,14 @@ static INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 MainWindow::MainWindow(HINSTANCE hInstance) :
 	BaseWindow(hInstance)
 {
-	if (LoadStringW(hInstance, IDS_APP_TITLE, this->szTitle, sizeof(this->szTitle)) == 0)
-	{
-		/* TODO: handle error */
-	}
-	if (LoadStringW(hInstance, IDC_MEANINGLESSSOFTWARE, this->szWindowClass, sizeof(this->szWindowClass)) == 0)
-	{
-		/* TODO: handle error */
-	}
+if (LoadStringW(hInstance, IDS_APP_TITLE, this->szTitle, sizeof(this->szTitle)) == 0)
+{
+	/* TODO: handle error */
+}
+if (LoadStringW(hInstance, IDC_MEANINGLESSSOFTWARE, this->szWindowClass, sizeof(this->szWindowClass)) == 0)
+{
+	/* TODO: handle error */
+}
 }
 
 MainWindow::~MainWindow()
@@ -91,34 +91,72 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 LRESULT MainWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	this->pLoginWin = new LoginWindow;
+	/* Create Button */
+	this->hWndLoginButton = CreateWindow(L"Button", L"使用QQ登录", WS_VISIBLE | WS_TABSTOP | WS_CHILD | BS_PUSHBUTTON,
+		35, 10, 160, 60, this->hWnd, (HMENU)IDC_CREATE_LOGIN_WINDOW, this->hInstance, NULL);
+
+	return 0;
+	//	return DefWindowProc(this->hWnd, uMsg, wParam, lParam);
+}
+
+BOOL MainWindow::CreateLoginWindow()
+{
 	if (this->pLoginWin)
 	{
-		RECT rect;
-		GetClientRect(this->hWnd, &rect);
-
-		/* Create Login-Window */
-		this->pLoginWin->Create(WS_CHILD | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, 0,
-			(rect.right - rect.left) / 4, 0, (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2,
-			this->hWnd, 0);
-		/* Show Login-Window */
-		ShowWindow(this->pLoginWin->Window(), SW_SHOWNORMAL);
-
-		/* Create Button */
-		this->hWndLoginButton = CreateWindow(L"Button", L"按钮一", WS_VISIBLE | WS_TABSTOP | WS_CHILD | BS_PUSHBUTTON,
-			35, 10, 160, 60, this->hWnd, NULL, this->hInstance, NULL);
-		
+		MessageBox(this->hWnd, L"Login Window has been created, please log in!", L"提醒", MB_OK);
+		return TRUE;
 	}
-	return 0;
-//	return DefWindowProc(this->hWnd, uMsg, wParam, lParam);
+
+	if ((this->pLoginWin = new LoginWindow) == NULL)
+	{
+		/* TODO: handle error */
+		MessageBox(this->hWnd, L"Login Window has been created, please log in!", L"提醒", MB_OK);
+		return FALSE;
+	}
+
+	BOOL boolRet = FALSE;
+	RECT rect;
+
+	boolRet = GetClientRect(this->hWnd, &rect);
+	if (boolRet == FALSE)
+	{
+		/* TODO: handle error */
+		MessageBox(this->hWnd, L"GetClientRect failed!", L"提醒", MB_OK);
+		return FALSE;
+	}
+
+	/* Create Login-Window */
+	boolRet = this->pLoginWin->Create(WS_CHILD | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, 0,
+		
+		(rect.right - rect.left) / 4, 0, (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2,
+		this->hWnd, 0);
+	if (boolRet == FALSE)
+	{
+		/* TODO: handle error */
+		MessageBox(this->hWnd, L"Create failed!", L"提醒", MB_OK);
+		return FALSE;
+	}
+
+	/* Show Login-Window */
+	ShowWindow(this->pLoginWin->Window(), SW_SHOWNORMAL);
+	return TRUE;
 }
 
 LRESULT MainWindow::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	int wmId = LOWORD(wParam);
+	HWND selfHwnd = (HWND)lParam;
 	// 分析菜单选择: 
 	switch (wmId)
 	{
+	case IDC_CREATE_LOGIN_WINDOW:
+		if (this->CreateLoginWindow())
+		{
+			/* disable login-button util the login-window close */
+			SendMessage(selfHwnd, WM_SETTEXT, (WPARAM)NULL, (LPARAM)L"正在登录");
+			EnableWindow(selfHwnd, FALSE);
+		}
+		break;
 	case IDM_ABOUT:
 		DialogBox(this->hInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), this->hWnd, About);
 		break;

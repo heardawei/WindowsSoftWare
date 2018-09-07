@@ -26,6 +26,7 @@ private:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+	BOOL CreateLoginWindow();
 
 	WCHAR szTitle[MAX_PRESENT_STRING];
 	WCHAR szWindowClass[MAX_PRESENT_STRING];
